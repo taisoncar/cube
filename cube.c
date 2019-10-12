@@ -11,7 +11,9 @@ void notationfp();void notationbp();void notationdp();void notationlp();void not
 void scanface(char *matrix[3][3],int row,int col);      
 void printface(char *matrix[3][3],int row,int col);     
 void paintface(char *matrix[3][3],int row,int col,char *color);     
-void initcube();
+void freeface(char *matrix[3][3],int row,int col);
+void manualcube(char *s);
+void initcube();void endcube();
 void printcube();   
 
 struct face{
@@ -243,6 +245,103 @@ void paintface(char *matrix[3][3],int row,int col,char *color)
     }
 }
 
+void freeface(char *matrix[3][3],int row,int col)
+{
+    for(int r=0;r<row;++r)
+    {
+        for(int c=0;c<col;++c)
+        {
+            free(matrix[r][c]);
+        }
+    }
+}
+
+void manualcube(char *s)
+{
+    for(int i=0;s[i]!='\0';++i)
+    {
+        if(s[i+1]=='p')
+        {
+            switch(s[i]){
+            case 'R':case 'r':
+                notationrp();
+                break;
+            case 'L':case 'l':
+                notationlp();
+                break;
+            case 'U':case 'u':
+                notationup();
+                break;
+            case 'D':case 'd':
+                notationdp();
+                break;
+            case 'F':case 'f':
+                notationfp();
+                break;
+            case 'B':case 'b':
+                notationbp();
+                break;
+            }
+            ++i;
+        }
+
+        else if(s[i+1]=='2')
+        {
+            switch(s[i]){
+            case 'R':case 'r':
+                notationr();
+                notationr();
+                break;
+            case 'L':case 'l':
+                notationl();
+                notationl();
+                break;
+            case 'U':case 'u':
+                notationu();
+                notationu();
+                break;
+            case 'D':case 'd':
+                notationd();
+                notationd();
+                break;
+            case 'F':case 'f':
+                notationf();
+                notationf();
+                break;
+            case 'B':case 'b':
+                notationb();
+                notationb();
+                break;
+            }
+            ++i;
+        }
+
+        else
+        {
+            switch(s[i]){
+            case 'R':case 'r':
+                notationr();
+                break;
+            case 'L':case 'l':
+                notationl();
+                break;
+            case 'U':case 'u':
+                notationu();
+                break;
+            case 'D':case 'd':
+                notationl();
+                break;
+            case 'F':case 'f':
+                notationf();
+                break;
+            case 'B':case 'b':
+                notationb();
+                break;
+            }
+        }
+    }
+}
+
 void initcube()
 {
     paintface(front.color,3,3,"G");
@@ -251,6 +350,16 @@ void initcube()
     paintface(up.color,3,3,"Y");
     paintface(left.color,3,3,"R");
     paintface(right.color,3,3,"O");
+}
+
+void endcube()
+{
+    freeface(front.color,3,3);
+    freeface(back.color,3,3);
+    freeface(down.color,3,3);
+    freeface(up.color,3,3);
+    freeface(left.color,3,3);
+    freeface(right.color,3,3);
 }
 
 void printcube()
@@ -272,9 +381,7 @@ void printcube()
 int main()
 {
     initcube();    
-    notationb();
-    notationbp();
-    notationdp();
-    notationf();
+    manualcube("rurpuru2rp");
     printcube();
+    endcube();
 }
