@@ -1,6 +1,6 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 void strswap(char *s,char *t);  
 void strarrswap(char *matrix[3][3],char *rc,char *matrix1[3][3],char *rc1);     
@@ -31,7 +31,7 @@ void strswap(char *s,char *t)
 }
 
 void facerotate(char *matrix[3][3])
-
+{
     strswap(matrix[0][0],matrix[0][2]);
     strswap(matrix[0][0],matrix[2][2]);
     strswap(matrix[0][0],matrix[2][0]);
