@@ -1,0 +1,6 @@
+﻿  cube.cpp
+c:\users\user\desktop\cube\cube.cpp(218): warning C4473: 'scanf_s' : not enough arguments passed for format string
+  c:\users\user\desktop\cube\cube.cpp(218): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  c:\users\user\desktop\cube\cube.cpp(218): note: the missing variadic argument 2 is required by format string '%s'
+  c:\users\user\desktop\cube\cube.cpp(218): note: this argument is used as a buffer size
+  cubes.vcxproj -> C:\Users\user\Desktop\cube\cubes\Debug\cubes.exe
