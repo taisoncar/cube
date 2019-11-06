@@ -380,9 +380,20 @@ void printcube()
 int main()
 {
     initcube();
-    ///////////
-    manualcube((char *)"ru2rpupru2lpurpupl");
-    ///////////
     printcube();
+    ///////////
+    char input[100];
+    
+    while (strcmp(input,"end")!=0)
+    {
+        scanf("%s",input);
+        if (strcmp(input,"reset")==0)
+            initcube();
+        else
+            manualcube(input);
+        printcube();
+    }
+    ///////////
+    printcube;
     endcube();
 }
