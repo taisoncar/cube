@@ -1,5 +1,5 @@
 # cube
-Rubiks cube simulator in c which displays the cube in 2D (net) with the help of SDL
+Rubik's cube simulator in c which displays the cube in 2D (net) with the help of SDL
 
 cube.c: The main program
 
