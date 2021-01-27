@@ -1,399 +1,162 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "cube.h"
+#include "SDLT.h"
 
-void strswap(char *s,char *t);  
-void strarrswap(char *matrix[3][3],char *rc,char *matrix1[3][3],char *rc1);     
-void facerotate(char *matrix[3][3]);void rfacerotate(char *matrix[3][3]);    
-void notationf();void notationb();void notationd();void notationl();void notationr();void notationu();      
-void notationfp();void notationbp();void notationdp();void notationlp();void notationrp();void notationup();
-void scanface(char *matrix[3][3],int row,int col);      
-void printface(char *matrix[3][3],int row,int col);     
-void paintface(char *matrix[3][3],int row,int col,char *color);     
-void freeface(char *matrix[3][3],int row,int col);
-void manualcube(char *s);
-void initcube();void endcube();
-void printcube();   
+#define CWIDTH 70
+#define CHEIGHT 70
 
-struct face{
-    char *color[3][3];  
-};
-typedef struct face face;
-
-face front,back,down,up,left,right;     
-
-void strswap(char *s,char *t)
+void setcolor(char* string)
 {
-    char* temp=(char*)malloc(strlen(s)+1);
-    strcpy(temp,s);
-    strcpy(s,t);
-    strcpy(t,temp);
-}
+    if ( strcmp(string, "G") == 0 ) //green
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );
+    }
 
-void facerotate(char *matrix[3][3])
-{
-    strswap(matrix[0][0],matrix[0][2]);
-    strswap(matrix[0][0],matrix[2][2]);
-    strswap(matrix[0][0],matrix[2][0]);
-    strswap(matrix[0][1],matrix[1][2]);
-    strswap(matrix[0][1],matrix[2][1]);
-    strswap(matrix[0][1],matrix[1][0]);
-}
+    else if ( strcmp(string, "B") == 0 ) //blue
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
+    }
 
-void rfacerotate(char *matrix[3][3])
-{
-    strswap(matrix[0][0],matrix[2][0]);
-    strswap(matrix[0][0],matrix[2][2]);
-    strswap(matrix[0][0],matrix[0][2]);
-    strswap(matrix[0][1],matrix[1][0]);
-    strswap(matrix[0][1],matrix[2][1]);
-    strswap(matrix[0][1],matrix[1][2]);
-}
+    else if ( strcmp(string, "R") == 0 ) //red
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );
+    }
 
-void strarrswap(char *matrix[3][3],char *rc,char *matrix1[3][3],char *rc1)
-{
-    int cr=*(rc+1)-'0';
-    int cr1=*(rc1+1)-'0';
+    else if ( strcmp(string, "O") == 0 ) //orange
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x70, 0x00, 0xFF );
+    }
+
+    else if ( strcmp(string, "W") == 0 ) //white
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+    }
+
+    else if ( strcmp(string, "Y") == 0 ) //yellow
+    {
+        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0x00, 0xFF );
+    }
+
+    else
+    {
+        fprintf(fptr, "error finding specific color in a face");
+    }
     
-    if (*rc=='r')
+}
+
+void colorface( char *matrix[3][3], int x, int y ) // (x, y) = bottom left coordinate of the cube
+{
+    int xtemp = x;
+    int ytemp = y;
+    for( int r=0; r<3; ++r )
     {
-        if (*rc1=='r')
+        x = xtemp;
+        for( int c=0; c<3; ++c )
         {
-            for (int i=0;i<3;++i)
-            {
-                strswap(matrix[cr][i],matrix1[cr1][i]);
-            }
+            SDL_Rect cube = { x, y, CWIDTH, CHEIGHT };
+            setcolor( matrix[c][r] );
+            SDL_RenderFillRect( gRenderer, &cube);
+            SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );      
+            SDL_RenderDrawRect( gRenderer, &cube );
+            x += CWIDTH;
         }
-
-        else if (*rc1=='c')
-        {
-            for (int i=0;i<3;++i)
-            {
-                strswap(matrix[cr][i],matrix1[i][cr1]);
-            }
-        }
-    }
-
-    else if (*rc=='c')
-    {
-        if (*rc1=='c')
-        {
-            for (int i=0;i<3;++i)
-            {
-                strswap(matrix[i][cr],matrix1[i][cr1]);
-            }
-        }
-
-        else if(*rc1=='r')
-        {
-            for (int i=0;i<3;++i)
-            {
-                strswap(matrix[i][cr],matrix1[cr1][i]);
-            }
-        }
+        y -= CHEIGHT;
     }
 }
 
-void notationf()
+void colorcube()
 {
-    strswap(left.color[0][2],left.color[2][2]);
-    strswap(right.color[0][0],right.color[2][0]);
-    strarrswap(down.color,(char *)"r0",left.color,(char *)"c2");
-    strarrswap(down.color, (char *)"r0",up.color, (char *)"r2");
-    strarrswap(down.color, (char *)"r0",right.color, (char *)"c0");
-    facerotate(front.color);
+    colorface( front.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 3 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 6 )
+            );
+    colorface( back.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 9 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 6 )
+            );
+    colorface( right.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 6 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 6 )
+            );
+    colorface( left.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 0 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 6 )
+            );
+    colorface( up.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 3 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 3 )
+            );
+    colorface( down.color,
+            (( SCREEN_WIDTH - ( CWIDTH * 12 ))/2) + ( CWIDTH * 3 ),
+            (( SCREEN_HEIGHT - ( CHEIGHT * 9 ))/2) + ( CHEIGHT * 9 )
+            );    
 }
 
-void notationr()
+int main( int argc, char* args[] )
 {
-    strarrswap(down.color, (char *)"c2",front.color, (char *)"c2");
-    strarrswap(down.color, (char *)"c2",up.color, (char *)"c2");
-    strarrswap(down.color, (char *)"c2",back.color, (char *)"c2");
-    facerotate(right.color);
-}
-
-void notationl()
-{
-    strarrswap(down.color, (char *)"c0",back.color, (char *)"c0");
-    strarrswap(down.color, (char *)"c0",up.color, (char *)"c0");
-    strarrswap(down.color, (char *)"c0",front.color, (char *)"c0");
-    facerotate(left.color);
-}
-
-void notationu()
-{
-    strswap(back.color[2][0],back.color[2][2]);
-    strswap(left.color[0][0],left.color[0][2]);
-    strarrswap(front.color, (char *)"r0",left.color, (char *)"r0");
-    strarrswap(front.color, (char *)"r0",back.color, (char *)"r2");
-    strarrswap(front.color, (char *)"r0",right.color, (char *)"r0");
-    facerotate(up.color);
-}
-
-void notationd()
-{
-    strswap(back.color[0][0],back.color[0][2]);
-    strswap(right.color[2][0],right.color[2][2]);
-    strarrswap(front.color, (char *)"r2",right.color, (char *)"r2");
-    strarrswap(front.color, (char *)"r2",back.color, (char *)"r0");
-    strarrswap(front.color, (char *)"r2",left.color, (char *)"r2");
-    facerotate(down.color);
-}
-
-void notationb()
-{
-    strswap(up.color[0][0],up.color[0][2]);
-    strswap(down.color[2][0],down.color[2][2]);
-    strarrswap(down.color, (char *)"r2",right.color, (char *)"c2");
-    strarrswap(down.color, (char *)"r2",up.color, (char *)"r0");
-    strarrswap(down.color, (char *)"r2",left.color, (char *)"c0");
-    rfacerotate(back.color);
-}
-
-void notationfp()
-{
-    strswap(up.color[2][0],up.color[2][2]);
-    strswap(down.color[0][0],down.color[0][2]);
-    strarrswap(down.color, (char *)"r0",right.color, (char *)"c0");
-    strarrswap(down.color, (char *)"r0",up.color, (char *)"r2");
-    strarrswap(down.color, (char *)"r0",left.color, (char *)"c2");
-    rfacerotate(front.color);
-}
-
-void notationrp()
-{
-    strarrswap(down.color, (char *)"c2",back.color, (char *)"c2");
-    strarrswap(down.color, (char *)"c2",up.color, (char *)"c2");
-    strarrswap(down.color, (char *)"c2",front.color, (char *)"c2");
-    rfacerotate(right.color);
-}
-
-void notationlp()
-{
-    strarrswap(down.color, (char *)"c0",front.color, (char *)"c0");
-    strarrswap(down.color, (char *)"c0",up.color, (char *)"c0");
-    strarrswap(down.color, (char *)"c0",back.color, (char *)"c0");
-    rfacerotate(left.color);
-}
-
-void notationup()
-{
-    strswap(back.color[2][0],back.color[2][2]);
-    strswap(right.color[0][0],right.color[0][2]);
-    strarrswap(front.color, (char *)"r0",right.color, (char *)"r0");
-    strarrswap(front.color, (char *)"r0",back.color, (char *)"r2");
-    strarrswap(front.color, (char *)"r0",left.color, (char *)"r0");
-    rfacerotate(up.color);
-}
-
-void notationdp()
-{
-    strswap(back.color[0][0],back.color[0][2]);
-    strswap(left.color[2][0],left.color[2][2]);
-    strarrswap(front.color, (char *)"r2",left.color, (char *)"r2");
-    strarrswap(front.color, (char *)"r2",back.color, (char *)"r0");
-    strarrswap(front.color, (char *)"r2",right.color, (char *)"r2");
-    rfacerotate(down.color);
-}
-
-void notationbp()
-{
-    strswap(right.color[0][2],right.color[2][2]);
-    strswap(left.color[0][0],left.color[2][0]);
-    strarrswap(down.color, (char *)"r2",left.color, (char *)"c0");
-    strarrswap(down.color, (char *)"r2",up.color, (char *)"r0");
-    strarrswap(down.color, (char *)"r2",right.color, (char *)"c2");
-    rfacerotate(back.color);
-}
-
-void scanface(char *matrix[3][3],int row,int col)
-{
-    for(int r=0;r<row;++r)
-    {
-        for(int c=0;c<col;++c)
-        {
-            matrix[r][c]=(char*)malloc(10);
-            printf("row%dcolumn%d:",r,c);
-            scanf("%s",matrix[r][c]);
-        }
-    }
-}
-
-void printface(char *matrix[3][3],int row,int col)
-{
-    for(int r=0;r<row;++r)
-    {
-        for(int c=0;c<col;++c)
-        {
-            printf("%s   ",matrix[r][c]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void paintface(char *matrix[3][3],int row,int col,char *color)
-{
-    for(int r=0;r<row;++r)
-    {
-        for(int c=0;c<col;++c)
-        {
-            matrix[r][c]=(char*)malloc(strlen(color)+2);
-            strcpy(matrix[r][c],color);
-        }
-    }
-}
-
-void freeface(char *matrix[3][3],int row,int col)
-{
-    for(int r=0;r<row;++r)
-    {
-        for(int c=0;c<col;++c)
-        {
-            free(matrix[r][c]);
-        }
-    }
-}
-
-void manualcube(char *s)
-{
-    for(int i=0;s[i]!='\0';++i)
-    {
-        if(s[i+1]=='p')
-        {
-            switch(s[i]){
-            case 'R':case 'r':
-                notationrp();
-                break;
-            case 'L':case 'l':
-                notationlp();
-                break;
-            case 'U':case 'u':
-                notationup();
-                break;
-            case 'D':case 'd':
-                notationdp();
-                break;
-            case 'F':case 'f':
-                notationfp();
-                break;
-            case 'B':case 'b':
-                notationbp();
-                break;
-            }
-            ++i;
-        }
-
-        else if(s[i+1]=='2')
-        {
-            switch(s[i]){
-            case 'R':case 'r':
-                notationr();
-                notationr();
-                break;
-            case 'L':case 'l':
-                notationl();
-                notationl();
-                break;
-            case 'U':case 'u':
-                notationu();
-                notationu();
-                break;
-            case 'D':case 'd':
-                notationd();
-                notationd();
-                break;
-            case 'F':case 'f':
-                notationf();
-                notationf();
-                break;
-            case 'B':case 'b':
-                notationb();
-                notationb();
-                break;
-            }
-            ++i;
-        }
-
-        else
-        {
-            switch(s[i]){
-            case 'R':case 'r':
-                notationr();
-                break;
-            case 'L':case 'l':
-                notationl();
-                break;
-            case 'U':case 'u':
-                notationu();
-                break;
-            case 'D':case 'd':
-                notationd();
-                break;
-            case 'F':case 'f':
-                notationf();
-                break;
-            case 'B':case 'b':
-                notationb();
-                break;
-            }
-        }
-    }
-}
-
-void initcube()
-{
-    paintface(front.color,3,3, (char *)"G");
-    paintface(back.color,3,3, (char *)"B");
-    paintface(down.color,3,3, (char *)"W");
-    paintface(up.color,3,3, (char *)"Y");
-    paintface(left.color,3,3, (char *)"R");
-    paintface(right.color,3,3, (char *)"O");
-}
-
-void endcube()
-{
-    freeface(front.color,3,3);
-    freeface(back.color,3,3);
-    freeface(down.color,3,3);
-    freeface(up.color,3,3);
-    freeface(left.color,3,3);
-    freeface(right.color,3,3);
-}
-
-void printcube()
-{
-    printf("front:\n");
-    printface(front.color,3,3);
-    printf("back:\n");
-    printface(back.color,3,3);
-    printf("down:\n");
-    printface(down.color,3,3);
-    printf("up\n");
-    printface(up.color,3,3);
-    printf("left\n");
-    printface(left.color,3,3);
-    printf("right\n");
-    printface(right.color,3,3);
-}
-
-int main()
-{
+    printf( "Welcome to my cube simulator in c\n");
     initcube();
-    printcube();
-    ///////////
-    char input[100];
-    
-    while (strcmp(input,"end")!=0)
+    bool quit = false;
+    SDL_Event e;
+
+	if( !init() )
     {
-        scanf("%s",input);
-        if (strcmp(input,"reset")==0)
-            initcube();
-        else
-            manualcube(input);
-        printcube();
+        printf( "Failed to initialize!\n" );
     }
-    ///////////
-    printcube;
+
+	else
+	{
+        SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+        SDL_RenderClear( gRenderer );
+        colorcube();
+        printcube();
+        SDL_RenderPresent( gRenderer );
+        while( !quit )
+		{
+			while( SDL_PollEvent( &e ) != 0 )
+			{
+				if( e.type == SDL_QUIT )
+				{
+					quit = true;
+				}
+                else if( e.type == SDL_KEYDOWN )
+                {
+                    switch( e.key.keysym.sym )
+                    {
+                        case SDLK_f:
+                        notation_f();
+						break;
+
+						case SDLK_b:
+						notation_b();
+						break;
+
+						case SDLK_r:
+						notation_r();
+						break;
+
+						case SDLK_l:
+                        notation_l();
+						break;
+
+                        case SDLK_u:
+                        notation_u();
+						break;
+
+                        case SDLK_d:
+                        notation_d();
+						break;
+                    }
+                    printcube();
+                    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+                    SDL_RenderClear( gRenderer );
+                    colorcube();
+                    printcube();
+                    SDL_RenderPresent( gRenderer );
+                }
+            }
+		}
+	}
+    closeSDL();
     endcube();
+    return 0;
 }
