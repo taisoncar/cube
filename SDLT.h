@@ -2,7 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-typedef enum boolean{false, true} bool;
+typedef enum {false, true} bool;
 
 bool init();
 bool loadMedia();
