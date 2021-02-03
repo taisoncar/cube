@@ -98,53 +98,53 @@ int main( int argc, char* args[] )
     bool quit = false;
     SDL_Event e;
 
-	if( !init() )
+    if( !init() )
     {
         printf( "Failed to initialize!\n" );
     }
 
-	else
-	{
+    else
+    {
         SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
         SDL_RenderClear( gRenderer );
         colorcube();
         printcube();
         SDL_RenderPresent( gRenderer );
         while( !quit )
-		{
-			while( SDL_PollEvent( &e ) != 0 )
-			{
-				if( e.type == SDL_QUIT )
-				{
-					quit = true;
-				}
+        {
+            while( SDL_PollEvent( &e ) != 0 )
+            {
+                if( e.type == SDL_QUIT )
+                {
+                    quit = true;
+                }
                 else if( e.type == SDL_KEYDOWN )
                 {
                     switch( e.key.keysym.sym )
                     {
                         case SDLK_f:
                         notation_f();
-						break;
+                        break;
 
-						case SDLK_b:
-						notation_b();
-						break;
+                        case SDLK_b:
+                        notation_b();
+                        break;
 
-						case SDLK_r:
-						notation_r();
-						break;
+                        case SDLK_r:
+                        notation_r();
+                        break;
 
-						case SDLK_l:
+                        case SDLK_l:
                         notation_l();
-						break;
+                        break;
 
                         case SDLK_u:
                         notation_u();
-						break;
+                        break;
 
                         case SDLK_d:
                         notation_d();
-						break;
+                        break;
                     }
                     printcube();
                     SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
@@ -154,8 +154,8 @@ int main( int argc, char* args[] )
                     SDL_RenderPresent( gRenderer );
                 }
             }
-		}
-	}
+        }
+    }
     closeSDL();
     endcube();
     return 0;

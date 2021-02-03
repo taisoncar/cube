@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}\\**",
                 "C:\\MinGW\\lib\\gcc\\mingw32\\9.2.0",
                 "C:\\SDL\\include\\SDL2",
                 "C:\\SDL\\lib"
@@ -14,7 +14,7 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.17763.0",
-            "compilerPath": "C:/MinGW/bin/gcc.exe",
+            "compilerPath": "C:\\MinGW\\bin\\gcc.exe",
             "cStandard": "c99",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x86",
